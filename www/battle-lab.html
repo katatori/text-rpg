@@ -137,7 +137,9 @@ function modifier(a,b){
 }
 
 function damage(a,b){
- return Math.max(1,classes[a].attack-classes[b].defense+modifier(a,b));
+ const base=Math.max(1,classes[a].attack-classes[b].defense+modifier(a,b));
+ const factor=0.8+Math.random()*0.4;
+ return Math.max(1,Math.round(base*factor));
 }
 
 function log(message,kind=""){
@@ -221,14 +223,22 @@ function runDuel(a,b){
  let ah=classes[a].hp;
  let bh=classes[b].hp;
  let turns=0;
+ const first=Math.random()<0.5?"a":"b";
 
  while(ah>0&&bh>0&&turns<500){
-  bh=Math.max(0,bh-damage(a,b));
-  turns++;
-  if(bh<=0)break;
-
-  ah=Math.max(0,ah-damage(b,a));
-  turns++;
+  if(first==="a"){
+   bh=Math.max(0,bh-damage(a,b));
+   turns++;
+   if(bh<=0)break;
+   ah=Math.max(0,ah-damage(b,a));
+   turns++;
+  }else{
+   ah=Math.max(0,ah-damage(b,a));
+   turns++;
+   if(ah<=0)break;
+   bh=Math.max(0,bh-damage(a,b));
+   turns++;
+  }
  }
 
  return {
