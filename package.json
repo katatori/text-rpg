@@ -1,0 +1,9 @@
+{
+  "name": "text-rpg",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Text RPG prototype",
+  "scripts": {
+    "start": "node server.js"
+  }
+}
