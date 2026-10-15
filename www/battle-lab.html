@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#101018">
+<title>Бойова лабораторія</title>
+<style>
+:root{color-scheme:dark;--bg:#101018;--panel:#1b1b28;--line:#383548;--gold:#e5bc70;--muted:#aaa8bd;--green:#68c995;--red:#d85d65}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at top,#28233a,var(--bg) 70%);color:#eeeaf6;font:16px/1.5 system-ui,sans-serif}
+main{max-width:650px;margin:auto;padding:20px 15px 40px}
+header{text-align:center;margin:10px 0 24px}
+h1{font:bold 30px Georgia,serif;color:var(--gold);margin:6px}
+.sub,.muted{color:var(--muted);font-size:13px}
+.panel{background:linear-gradient(145deg,#222130,#191923);border:1px solid var(--line);border-radius:15px;padding:16px;margin-bottom:13px}
+h2{font:bold 18px Georgia,serif;margin:0 0 12px}
+label{display:block;color:var(--muted);font-size:13px;margin-bottom:6px}
+select,button{font:inherit;width:100%;border-radius:10px;padding:12px;border:1px solid #51485e;background:#302b40;color:#f3edf9}
+button{font-weight:700;cursor:pointer;margin-top:9px}
+button.primary{background:linear-gradient(135deg,#87653d,#58432f);border-color:#ad8952}
+button:disabled{opacity:.45}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.stat{background:#11111a;border-radius:10px;padding:10px;text-align:center}
+.stat strong{display:block;color:#f5e5c5;font-size:22px}
+.stat span{font-size:12px;color:var(--muted)}
+.bar{height:9px;background:#0d0d14;border-radius:9px;overflow:hidden;margin:7px 0}
+.fill{height:100%;background:var(--green);width:100%;transition:width .2s}
+.enemy .fill{background:var(--red)}
+.log{max-height:240px;overflow:auto;font-size:13px;white-space:pre-line}
+.log p{border-bottom:1px solid #302d3c;padding-bottom:6px;margin:6px 0}
+.good{color:var(--green)}.bad{color:#ff9ba2}
+.result{font-size:19px;color:var(--gold);font-weight:700}
+table{border-collapse:collapse;width:100%;font-size:13px}
+td,th{padding:9px 5px;text-align:center;border-bottom:1px solid var(--line)}
+th{color:var(--gold)}
+.note{font-size:12px;color:var(--muted);margin-top:12px}
+.table-wrap{overflow-x:auto}
+</style>
+</head>
+<body>
+<main>
+<header>
+<div class="sub">ХРОНІКИ ЗАБУТИХ ЗЕМЕЛЬ</div>
+<h1>Бойова лабораторія</h1>
+<div class="sub">Тестування класів · Версія 0.1</div>
+</header>
+
+<section class="panel">
+<h2>1. Обери свій клас</h2>
+<label for="hero">Клас персонажа</label>
+<select id="hero">
+<option value="warrior">Воїн — витривалість</option>
+<option value="assassin">Убивця — швидкість</option>
+<option value="mage">Маг — бойова магія</option>
+</select>
+<div class="grid" id="heroStats"></div>
+<button class="primary" id="start">Почати бій</button>
+<div class="note">Клас противника випадковий. Після початку бою він буде розкритий.</div>
+</section>
+
+<section class="panel">
+<h2>2. Бій</h2>
+<div id="battleStatus" class="muted">Очікування початку бою.</div>
+<div id="battle" hidden>
+<h3 id="enemyName"></h3>
+<div class="enemy">
+<div id="enemyHealthText" class="muted"></div>
+<div class="bar"><div id="enemyBar" class="fill"></div></div>
+</div>
+<div id="heroHealthText" class="muted"></div>
+<div class="bar"><div id="heroBar" class="fill"></div></div>
+<button class="primary" id="hit">Завдати удару</button>
+<button id="newBattle">Новий бій</button>
+</div>
+<div id="result" class="result"></div>
+<div id="log" class="log"></div>
+</section>
+
+<section class="panel">
+<h2>3. Автоматичний баланс-тест</h2>
+<label for="rounds">Кількість боїв для кожної пари класів</label>
+<select id="rounds">
+<option value="100">100</option>
+<option value="500" selected>500</option>
+<option value="1000">1000</option>
+</select>
+<button class="primary" id="simulate">Запустити тест усіх пар</button>
+<div id="testStatus" class="muted"></div>
+<div id="testResults" class="table-wrap"></div>
+<div class="note">Тест охоплює всі дев'ять комбінацій класів, включно з боями однакових класів.</div>
+</section>
+
+<section class="panel">
+<h2>Правила тестової моделі</h2>
+<p class="muted">Воїн має перевагу над убивцею, убивця — над магом, маг — над воїном. Перевага додає фіксовану шкоду, а невигідний матчап її зменшує.</p>
+<p class="muted">Шкода = максимум із 1 та (атака − захист противника + модифікатор класу).</p>
+<p class="muted">Усі значення фіксовані. Захист кожного класу нижчий за його атаку. Це тестова модель, а не остаточні параметри гри.</p>
+</section>
+</main>
+
+<script>
+const classes={
+ warrior:{name:"Воїн",hp:100,attack:14,defense:8},
+ assassin:{name:"Убивця",hp:80,attack:13,defense:5},
+ mage:{name:"Маг",hp:85,attack:12,defense:6}
+};
+
+const names=Object.keys(classes);
+const advantage={
+ warrior:"assassin",
+ assassin:"mage",
+ mage:"warrior"
+};
+const MOD=3;
+let fight=null;
+
+const $=id=>document.getElementById(id);
+
+function statsMarkup(c){
+ return `
+ <div class="stat"><strong>${c.hp}</strong><span>Здоров'я</span></div>
+ <div class="stat"><strong>${c.attack}</strong><span>Атака</span></div>
+ <div class="stat"><strong>${c.defense}</strong><span>Захист</span></div>
+ <div class="stat"><strong>${c.attack-c.defense}</strong><span>Атака мінус захист</span></div>`;
+}
+
+function showHeroStats(){
+ $("heroStats").innerHTML=statsMarkup(classes[$("hero").value]);
+}
+
+function modifier(a,b){
+ if(a===b)return 0;
+ if(advantage[a]===b)return MOD;
+ if(advantage[b]===a)return -MOD;
+ return 0;
+}
+
+function damage(a,b){
+ return Math.max(1,classes[a].attack-classes[b].defense+modifier(a,b));
+}
+
+function log(message,kind=""){
+ const p=document.createElement("p");
+ p.className=kind;
+ p.textContent=message;
+ $("log").prepend(p);
+}
+
+function healthBars(){
+ $("enemyHealthText").textContent=
+ `${fight.enemyName}: ${fight.enemyHp} / ${fight.enemy.hp} здоров'я`;
+ $("heroHealthText").textContent=
+ `Ти: ${fight.heroHp} / ${fight.hero.hp} здоров'я`;
+ $("enemyBar").style.width=
+ (100*fight.enemyHp/fight.enemy.hp)+"%";
+ $("heroBar").style.width=
+ (100*fight.heroHp/fight.hero.hp)+"%";
+}
+
+function finish(winner){
+ fight.done=true;
+ $("result").textContent=
+ winner==="hero"?"Перемога!":
+ winner==="enemy"?"Поразка.":"Нічия.";
+ $("battleStatus").textContent="Бій завершено";
+ $("hit").disabled=true;
+ log(winner==="hero"?"Ти переміг.":"Ти програв.",winner==="hero"?"good":"bad");
+}
+
+function startFight(){
+ const heroKey=$("hero").value;
+ const enemyKey=names[Math.floor(Math.random()*names.length)];
+
+ fight={
+  heroKey,
+  enemyKey,
+  hero:{...classes[heroKey]},
+  enemy:{...classes[enemyKey]},
+  heroHp:classes[heroKey].hp,
+  enemyHp:classes[enemyKey].hp,
+  enemyName:classes[enemyKey].name,
+  done:false
+ };
+
+ $("battle").hidden=false;
+ $("result").textContent="";
+ $("log").innerHTML="";
+ $("enemyName").textContent="Противник: "+fight.enemyName;
+ $("battleStatus").textContent="Бій розпочато";
+ $("hit").disabled=false;
+
+ log(`Твій клас: ${classes[heroKey].name}. Противник: ${fight.enemyName}.`);
+ const m=modifier(heroKey,enemyKey);
+ log(`Модифікатор твого класу: ${m>0?"+":""}${m}.`);
+ healthBars();
+}
+
+function turn(){
+ if(!fight||fight.done)return;
+
+ const d=damage(fight.heroKey,fight.enemyKey);
+ fight.enemyHp=Math.max(0,fight.enemyHp-d);
+ log(`Ти завдаєш ${d} шкоди.`);
+ healthBars();
+
+ if(fight.enemyHp<=0){
+  finish("hero");
+  return;
+ }
+
+ const e=damage(fight.enemyKey,fight.heroKey);
+ fight.heroHp=Math.max(0,fight.heroHp-e);
+ log(`${fight.enemyName} завдає ${e} шкоди.`);
+ healthBars();
+
+ if(fight.heroHp<=0)finish("enemy");
+}
+
+function runDuel(a,b){
+ let ah=classes[a].hp;
+ let bh=classes[b].hp;
+ let turns=0;
+
+ while(ah>0&&bh>0&&turns<500){
+  bh=Math.max(0,bh-damage(a,b));
+  turns++;
+  if(bh<=0)break;
+
+  ah=Math.max(0,ah-damage(b,a));
+  turns++;
+ }
+
+ return {
+  winner:ah>0&&bh<=0?"a":
+         bh>0&&ah<=0?"b":"draw",
+  turns
+ };
+}
+
+function simulate(){
+ const n=Number($("rounds").value);
+ let html="<table><thead><tr><th>Твій клас</th><th>Клас ворога</th><th>Перемоги</th><th>Середні ходи</th></tr></thead><tbody>";
+
+ for(const a of names){
+  for(const b of names){
+   let wins=0;
+   let losses=0;
+   let draws=0;
+   let totalTurns=0;
+
+   for(let i=0;i<n;i++){
+    const r=runDuel(a,b);
+    totalTurns+=r.turns;
+    if(r.winner==="a")wins++;
+    else if(r.winner==="b")losses++;
+    else draws++;
+   }
+
+   html+=`<tr>
+    <td>${classes[a].name}</td>
+    <td>${classes[b].name}</td>
+    <td>${wins}/${n}${draws?`; нічиї: ${draws}`:""}</td>
+    <td>${(totalTurns/n).toFixed(1)}</td>
+   </tr>`;
+  }
+ }
+
+ $("testResults").innerHTML=html+"</tbody></table>";
+ $("testStatus").textContent=`Готово: ${n*9} симуляцій завершено.`;
+}
+
+$("hero").addEventListener("change",showHeroStats);
+$("start").addEventListener("click",startFight);
+$("newBattle").addEventListener("click",startFight);
+$("hit").addEventListener("click",turn);
+$("simulate").addEventListener("click",simulate);
+
+showHeroStats();
+</script>
+</body>
+</html>
