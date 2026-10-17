@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#090807">
+<title>Хроніки Забутих Земель — Меню 0.0.2</title>
+<style>
+:root {
+  --bg: #090807;
+  --panel: #14110e;
+  --panel2: #1b1610;
+  --gold: #c7a45b;
+  --gold-bright: #f0d28b;
+  --text: #e8dfcc;
+  --muted: #a59a85;
+  --border: #594528;
+  --danger: #b56b58;
+  --scale: 1;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse at 50% 0%, #332515 0%, transparent 48%),
+    linear-gradient(180deg, #100d09, var(--bg) 65%);
+  color: var(--text);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: calc(16px * var(--scale));
+}
+body.no-motion *, body.no-motion *::before, body.no-motion *::after {
+  animation: none !important;
+  transition: none !important;
+}
+button, input, select { font: inherit; }
+button { touch-action: manipulation; }
+.shell {
+  width: min(100% - 28px, 520px);
+  margin: 0 auto;
+  padding: 24px 0 32px;
+}
+.topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--muted);
+  font: 11px/1.5 Arial, sans-serif;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.version { color: var(--gold); white-space: nowrap; }
+.ornament {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--gold);
+  margin: 25px 0 10px;
+  opacity: .9;
+}
+.ornament::before, .ornament::after {
+  content: "";
+  height: 1px;
+  flex: 1;
+  background: linear-gradient(90deg, transparent, var(--border));
+}
+.ornament::after { transform: scaleX(-1); }
+.rune { font-size: 22px; }
+h1 {
+  margin: 0;
+  text-align: center;
+  color: var(--gold-bright);
+  font-size: clamp(27px, 7vw, 38px);
+  line-height: 1.12;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 20px #b68a3a33;
+}
+.subtitle {
+  text-align: center;
+  margin: 12px 0 28px;
+  color: var(--muted);
+  font-size: 13px;
+  font-style: italic;
+  letter-spacing: 1px;
+}
+.emblem {
+  width: 94px;
+  height: 94px;
+  margin: 0 auto 24px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border);
+  transform: rotate(45deg);
+  background: linear-gradient(135deg, #20180e, #0c0a08);
+  box-shadow: 0 0 35px #c7a45b12, inset 0 0 20px #c7a45b0b;
+}
+.emblem span {
+  transform: rotate(-45deg);
+  color: var(--gold-bright);
+  font-size: 45px;
+}
+.panel {
+  position: relative;
+  border: 1px solid var(--border);
+  background: linear-gradient(145deg, #19140fef, #0d0b09f5);
+  padding: 22px 18px;
+  box-shadow: 0 12px 38px #0006;
+}
+.panel::before, .panel::after {
+  content: "✦";
+  position: absolute;
+  color: var(--gold);
+  font-size: 12px;
+}
+.panel::before { top: 7px; left: 8px; }
+.panel::after { bottom: 7px; right: 8px; }
+.view { display: none; }
+.view.active { display: block; animation: appear .22s ease-out; }
+@keyframes appear {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.section-title {
+  margin: 0 0 7px;
+  color: var(--gold-bright);
+  font-size: 23px;
+  font-weight: normal;
+}
+.description {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.65;
+  margin: 0 0 20px;
+}
+.menu-list { display: grid; gap: 10px; }
+.btn {
+  width: 100%;
+  min-height: 49px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  color: var(--text);
+  background: linear-gradient(90deg, #21190f, #15110d);
+  cursor: pointer;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: border-color .15s, background .15s, transform .15s;
+}
+.btn:hover:not(:disabled), .btn:focus-visible {
+  border-color: var(--gold);
+  background: #2a2012;
+  outline: none;
+}
+.btn:active:not(:disabled) { transform: scale(.99); }
+.btn.primary {
+  color: #f6e5b7;
+  border-color: #9b783c;
+  background: linear-gradient(100deg, #59421f, #2a1e10);
+}
+.btn:disabled { opacity: .4; cursor: not-allowed; }
+.btn-icon {
+  width: 25px;
+  text-align: center;
+  color: var(--gold);
+  font-size: 20px;
+}
+.btn-label { flex: 1; }
+.btn-arrow { color: var(--gold); }
+.note {
+  margin: 16px 0 0;
+  text-align: center;
+  color: #817765;
+  font: 11px/1.6 Arial, sans-serif;
+}
+.field { margin: 17px 0; }
+.field label, .field-title {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--gold);
+  font-size: 14px;
+}
+input[type="text"], select {
+  width: 100%;
+  min-height: 46px;
+  border: 1px solid #55432a;
+  border-radius: 0;
+  padding: 11px 12px;
+  background: #0b0907;
+  color: var(--text);
+}
+input:focus, select:focus {
+  outline: 1px solid var(--gold);
+  border-color: var(--gold);
+}
+.hint { color: var(--muted); font: 12px/1.5 Arial, sans-serif; }
+.actions { display: grid; gap: 10px; margin-top: 22px; }
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 15px 0;
+  border-bottom: 1px solid #3b3020;
+}
+.setting-row:last-of-type { border-bottom: 0; }
+.setting-label { color: var(--text); }
+.setting-help { display: block; margin-top: 5px; color: var(--muted); font-size: 12px; }
+.setting-row select { width: 130px; min-height: 40px; }
+input[type="checkbox"] {
+  width: 22px;
+  height: 22px;
+  accent-color: var(--gold);
+  flex-shrink: 0;
+}
+.rule { height: 1px; background: linear-gradient(90deg, transparent, var(--border), transparent); margin: 20px 0; }
+.lore {
+  border-left: 2px solid var(--gold);
+  padding: 10px 0 10px 15px;
+  color: #c4b79e;
+  font-style: italic;
+  line-height: 1.8;
+  font-size: 15px;
+}
+.status { min-height: 20px; color: var(--gold-bright); font-size: 13px; line-height: 1.5; }
+.footer {
+  text-align: center;
+  margin-top: 22px;
+  color: #766b58;
+  font: 10px/1.7 Arial, sans-serif;
+  letter-spacing: 1px;
+}
+@media (max-width: 360px) {
+  .shell { width: calc(100% - 20px); }
+  .panel { padding: 20px 13px; }
+  .topline { letter-spacing: 1px; }
+}
+</style>
+</head>
+<body>
+<main class="shell">
+  <div class="topline">
+    <span>✧ Літопис Загублених Епох</span>
+    <span class="version">Лабораторія 0.0.2</span>
+  </div>
+
+  <div class="ornament"><span class="rune">ᛟ</span></div>
+  <h1>Хроніки<br>Забутих Земель</h1>
+  <p class="subtitle">Світ пам'ятає те, що забули люди</p>
+  <div class="emblem" aria-hidden="true"><span>ᛉ</span></div>
+
+  <section class="panel">
+    <div class="view active" id="home">
+      <h2 class="section-title">На порозі легенди</h2>
+      <p class="description">Давні шляхи знову кличуть мандрівників. Та не кожен, хто ступає в темряву, повертається з відповідями.</p>
+      <div class="menu-list">
+        <button class="btn primary" data-go="creation">
+          <span class="btn-icon">✧</span><span class="btn-label">Нова гра</span><span class="btn-arrow">›</span>
+        </button>
+        <button class="btn" disabled title="Збереження ще не реалізовані">
+          <span class="btn-icon">◈</span><span class="btn-label">Продовжити</span><span class="btn-arrow">—</span>
+        </button>
+        <button class="btn" data-go="settings">
+          <span class="btn-icon">⚙</span><span class="btn-label">Налаштування</span><span class="btn-arrow">›</span>
+        </button>
+        <button class="btn" data-go="about">
+          <span class="btn-icon">ᛟ</span><span class="btn-label">Про гру</span><span class="btn-arrow">›</span>
+        </button>
+      </div>
+      <p class="note">Твоя історія ще не написана.</p>
+    </div>
+
+    <div class="view" id="creation">
+      <h2 class="section-title">Народження героя</h2>
+      <p class="description">Обери, ким ти станеш у світі, де старі таємниці досі мають ціну.</p>
+      <form id="character-form">
+        <div class="field">
+          <label for="hero-name">Ім'я мандрівника</label>
+          <input id="hero-name" name="heroName" type="text" maxlength="24" placeholder="Введи ім'я..." autocomplete="off" required>
+        </div>
+        <div class="field">
+          <label for="hero-origin">Походження</label>
+          <select id="hero-origin" name="origin">
+            <option value="Забуті рівнини">Забуті рівнини</option>
+            <option value="Північні рубежі">Північні рубежі</option>
+            <option value="Попелясте узбережжя">Попелясте узбережжя</option>
+            <option value="Далекий край">Далекий край</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="hero-class">Клас героя</label>
+          <select id="hero-class" name="heroClass">
+            <option value="Воїн">Воїн — стійкість і сила</option>
+            <option value="Убивця">Убивця — швидкість і точність</option>
+            <option value="Маг">Маг — таємні мистецтва</option>
+          </select>
+        </div>
+        <p class="hint">Це демонстрація інтерфейсу. Персонаж поки не зберігається в основній грі.</p>
+        <div id="creation-status" class="status" role="status"></div>
+        <div class="actions">
+          <button class="btn primary" type="submit"><span class="btn-icon">⚔</span><span class="btn-label">Створити героя</span><span class="btn-arrow">›</span></button>
+          <button class="btn" type="button" data-go="home"><span class="btn-icon">‹</span><span class="btn-label">Назад до меню</span></button>
+        </div>
+      </form>
+    </div>
+
+    <div class="view" id="hero-preview">
+      <h2 class="section-title">Легенда починається</h2>
+      <p class="description">Твій вибір зроблено. Попереду — невідомі землі та рішення, що можуть змінити долю.</p>
+      <div class="rule"></div>
+      <p><span class="hint">ІМ'Я</span><br><strong id="preview-name"></strong></p>
+      <p><span class="hint">ПОХОДЖЕННЯ</span><br><strong id="preview-origin"></strong></p>
+      <p><span class="hint">КЛАС</span><br><strong id="preview-class"></strong></p>
+      <div class="lore">«Коли останній дзвін пролунає, згадають навіть ті, хто не мав імені».</div>
+      <p class="hint">Попередній перегляд — не початок реальної гри. Дані існують лише на цьому екрані.</p>
+      <div class="actions">
+        <button class="btn primary" data-go="creation"><span class="btn-icon">✎</span><span class="btn-label">Змінити вибір</span></button>
+        <button class="btn" data-go="home"><span class="btn-icon">⌂</span><span class="btn-label">До головного меню</span></button>
+      </div>
+    </div>
+
+    <div class="view" id="settings">
+      <h2 class="section-title">Налаштування</h2>
+      <p class="description">Налаштуй вигляд літопису під себе.</p>
+      <div class="setting-row">
+        <div><span class="setting-label">Розмір тексту</span><span class="setting-help">Для зручнішого читання</span></div>
+        <select id="text-size" aria-label="Розмір тексту">
+          <option value="small">Малий</option>
+          <option value="normal">Звичайний</option>
+          <option value="large">Великий</option>
+        </select>
+      </div>
+      <div class="setting-row">
+        <div><span class="setting-label">Зменшити анімації</span><span class="setting-help">Менше руху в інтерфейсі</span></div>
+        <input id="motion-toggle" type="checkbox" aria-label="Зменшити анімації">
+      </div>
+      <div class="setting-row">
+        <div><span class="setting-label">Золоті акценти</span><span class="setting-help">Основний стиль лабораторії</span></div>
+        <span style="color:var(--gold)">✦ Активні</span>
+      </div>
+      <p class="hint">Налаштування зберігаються в цьому браузері на цьому пристрої.</p>
+      <div class="actions">
+        <button class="btn" id="reset-settings" type="button"><span class="btn-icon">↺</span><span class="btn-label">Скинути налаштування</span></button>
+        <button class="btn primary" data-go="home"><span class="btn-icon">‹</span><span class="btn-label">Назад до меню</span></button>
+      </div>
+      <p id="settings-status" class="status" role="status"></p>
+    </div>
+
+    <div class="view" id="about">
+      <h2 class="section-title">Про літопис</h2>
+      <p class="description">«Хроніки Забутих Земель» — задум темного фентезійного текстового RPG про відкритий світ, небезпечні рішення та таємниці давньої катастрофи.</p>
+      <div class="lore">Світ не загинув. Він просто забув, ким був.</div>
+      <div class="rule"></div>
+      <p><span class="hint">ВЕРСІЯ ІНТЕРФЕЙСУ</span><br>0.0.2 — лабораторний прототип</p>
+      <p><span class="hint">СТАТУС</span><br>Окрема сторінка для тестування дизайну.</p>
+      <p class="description">Цей екран не змінює основну гру та не впливає на APK.</p>
+      <div class="actions">
+        <button class="btn primary" data-go="home"><span class="btn-icon">‹</span><span class="btn-label">Назад до меню</span></button>
+      </div>
+    </div>
+  </section>
+
+  <div class="footer">ᛟ · НЕ ВСІ ТАЄМНИЦІ ХОЧУТЬ БУТИ ЗНАЙДЕНИМИ · ᛟ</div>
+</main>
+
+<script>
+(() => {
+  const views = [...document.querySelectorAll('.view')];
+  const validViews = new Set(views.map(view => view.id));
+
+  function showView(id) {
+    if (!validViews.has(id)) return;
+    views.forEach(view => view.classList.toggle('active', view.id === id));
+    const status = document.getElementById('creation-status');
+    if (status && id === 'creation') status.textContent = '';
+    window.scrollTo({ top: 0, behavior: document.body.classList.contains('no-motion') ? 'auto' : 'smooth' });
+  }
+
+  document.querySelectorAll('[data-go]').forEach(button => {
+    button.addEventListener('click', () => showView(button.dataset.go));
+  });
+
+  const textSize = document.getElementById('text-size');
+  const motionToggle = document.getElementById('motion-toggle');
+  const settingsStatus = document.getElementById('settings-status');
+
+  function applySettings(size, noMotion) {
+    const scale = { small: 0.9, normal: 1, large: 1.15 }[size] || 1;
+    document.documentElement.style.setProperty('--scale', scale);
+    document.body.classList.toggle('no-motion', Boolean(noMotion));
+    textSize.value = ['small', 'normal', 'large'].includes(size) ? size : 'normal';
+    motionToggle.checked = Boolean(noMotion);
+  }
+
+  function saveSettings() {
+    const settings = { size: textSize.value, noMotion: motionToggle.checked };
+    try {
+      localStorage.setItem('forgotten-lands-menu-settings-v002', JSON.stringify(settings));
+      settingsStatus.textContent = 'Налаштування застосовано.';
+    } catch (_) {
+      settingsStatus.textContent = 'Налаштування діють до закриття сторінки.';
+    }
+    applySettings(settings.size, settings.noMotion);
+  }
+
+  try {
+    const saved = JSON.parse(localStorage.getItem('forgotten-lands-menu-settings-v002') || '{}');
+    applySettings(saved.size || 'normal', saved.noMotion || false);
+  } catch (_) {
+    applySettings('normal', false);
+  }
+
+  textSize.addEventListener('change', saveSettings);
+  motionToggle.addEventListener('change', saveSettings);
+  document.getElementById('reset-settings').addEventListener('click', () => {
+    try { localStorage.removeItem('forgotten-lands-menu-settings-v002'); } catch (_) {}
+    applySettings('normal', false);
+    settingsStatus.textContent = 'Початкові налаштування відновлено.';
+  });
+
+  document.getElementById('character-form').addEventListener('submit', event => {
+    event.preventDefault();
+    const nameInput = document.getElementById('hero-name');
+    const name = nameInput.value.trim();
+    const status = document.getElementById('creation-status');
+    if (!name) {
+      status.textContent = 'Спочатку введи ім’я свого героя.';
+      nameInput.focus();
+      return;
+    }
+    document.getElementById('preview-name').textContent = name;
+    document.getElementById('preview-origin').textContent = document.getElementById('hero-origin').value;
+    document.getElementById('preview-class').textContent = document.getElementById('hero-class').value;
+    showView('hero-preview');
+  });
+})();
+</script>
+</body>
+</html>
