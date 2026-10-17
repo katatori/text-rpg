@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#090807">
+<title>Хроніки Забутих Земель — Лабораторія 0.0.3</title>
+<style>
+:root {
+  --bg:#090807; --panel:#15110d; --panel2:#20180f;
+  --gold:#c7a45b; --bright:#f0d28b; --text:#e8dfcc;
+  --muted:#a59a85; --border:#594528; --scale:1;
+}
+* { box-sizing:border-box }
+body {
+  margin:0; min-height:100vh; color:var(--text);
+  background:radial-gradient(ellipse at 50% 0%,#382817 0%,transparent 48%),var(--bg);
+  font:calc(15px * var(--scale))/1.5 Georgia,"Times New Roman",serif;
+}
+button,input,select { font:inherit }
+button { touch-action:manipulation }
+.shell { width:min(100% - 22px,650px); margin:auto; padding:18px 0 30px }
+.topline { display:flex; justify-content:space-between; gap:8px; color:var(--muted); font:10px Arial,sans-serif; letter-spacing:1.5px; text-transform:uppercase }
+.version { color:var(--gold); white-space:nowrap }
+.heading { text-align:center; padding:23px 0 18px }
+.rune { color:var(--gold); font-size:30px }
+h1 { color:var(--bright); font-size:clamp(25px,6vw,36px); line-height:1.1; margin:8px 0 }
+.subtitle { color:var(--muted); font-style:italic; font-size:13px; margin:8px 0 0 }
+.panel { border:1px solid var(--border); background:linear-gradient(145deg,#19140fee,#0d0b09f7); padding:17px; margin-bottom:13px; box-shadow:0 10px 30px #0005 }
+h2 { font-size:20px; font-weight:normal; color:var(--bright); margin:0 0 5px }
+.intro { color:var(--muted); font-size:13px; margin:0 0 15px }
+label,.label { display:block; color:var(--gold); font-size:13px; margin:0 0 7px }
+input[type=text],select {
+  width:100%; min-height:43px; padding:10px;
+  color:var(--text); background:#0b0907; border:1px solid var(--border); border-radius:0;
+}
+input:focus,select:focus,button:focus-visible { outline:1px solid var(--bright); outline-offset:2px }
+.field { margin-bottom:15px }
+.choice-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px }
+.choice {
+  min-width:0; display:block; position:relative; border:1px solid var(--border);
+  padding:12px 11px; background:#100d0a; cursor:pointer;
+}
+.choice:has(input:checked) { border-color:var(--gold); background:linear-gradient(145deg,#332514,#17110b); box-shadow:inset 0 0 0 1px #c7a45b22 }
+.choice input { accent-color:var(--gold); margin:0 5px 0 0 }
+.choice-name { display:inline; color:var(--bright); font-size:15px }
+.choice p { margin:8px 0 0; color:var(--muted); font-size:12px; line-height:1.5 }
+.tag { display:inline-block; color:var(--gold); font:10px Arial,sans-serif; border:1px solid #594528; padding:3px 5px; margin-top:8px }
+.class-grid { grid-template-columns:repeat(3,minmax(0,1fr)) }
+.class-grid .choice { padding:11px 8px }
+.class-symbol { display:block; font-size:24px; color:var(--gold); margin-bottom:4px }
+.class-grid .choice-name { font-size:14px }
+.class-grid .choice p { font-size:11px }
+.stats { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin:13px 0 }
+.stat { background:#0b0907; border:1px solid #3e3020; text-align:center; padding:11px 5px }
+.stat strong { display:block; color:var(--bright); font-size:24px; line-height:1.2 }
+.stat span { color:var(--muted); font:10px Arial,sans-serif; letter-spacing:.5px; text-transform:uppercase }
+.bonus { padding:12px; border-left:2px solid var(--gold); background:#20180f88; font-size:13px }
+.bonus strong { color:var(--bright) }
+.small { color:var(--muted); font-size:12px; margin:9px 0 0 }
+.actions { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:15px }
+.btn { min-height:45px; border:1px solid var(--border); padding:10px 12px; color:var(--text); background:#19130d; cursor:pointer }
+.btn.primary { color:#f6e5b7; border-color:#9b783c; background:linear-gradient(100deg,#59421f,#2a1e10) }
+.btn:active { transform:scale(.99) }
+.result { display:none }
+.result.visible { display:block }
+.result-name { font-size:25px; color:var(--bright); overflow-wrap:anywhere }
+.result-line { margin:9px 0; font-size:14px }
+.result-line span { color:var(--muted) }
+.lore { border-left:2px solid var(--gold); padding:10px 0 10px 14px; font-style:italic; color:#c4b79e; margin:15px 0 }
+.status { color:var(--bright); min-height:20px; font-size:13px; margin-top:10px }
+.footer { text-align:center; color:#766b58; font:10px Arial,sans-serif; letter-spacing:1px; margin:18px 0 }
+.hidden { display:none !important }
+@media(max-width:390px) {
+ .panel { padding:13px }
+ .choice-grid { gap:7px }
+ .choice { padding:10px 8px }
+ .class-grid { grid-template-columns:1fr }
+ .class-grid .choice { display:grid; grid-template-columns:30px 1fr; align-items:center; column-gap:7px }
+ .class-symbol { grid-row:span 2; margin:0 }
+ .class-grid .choice p,.class-grid .tag { grid-column:2 }
+ .stats { gap:5px }
+ .stat strong { font-size:21px }
+}
+</style>
+</head>
+<body>
+<main class="shell">
+  <div class="topline"><span>✧ Літопис Загублених Епох</span><span class="version">Лабораторія 0.0.3</span></div>
+  <header class="heading">
+    <div class="rune" aria-hidden="true">ᛟ ✧ ᛉ</div>
+    <h1>Створення героя</h1>
+    <p class="subtitle">Кожне походження залишає свій слід</p>
+  </header>
+
+  <form id="hero-form">
+    <section class="panel">
+      <h2>Ⅰ. Ім’я мандрівника</h2>
+      <p class="intro">Ім’я, яке одного дня може увійти до літописів.</p>
+      <div class="field">
+        <label for="hero-name">Ім’я героя</label>
+        <input id="hero-name" type="text" maxlength="24" minlength="2" placeholder="Введи ім’я..." autocomplete="off" required>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Ⅱ. Походження</h2>
+      <p class="intro">Твій край формує характер, відкриває можливості та залишає слід у твоїй історії.</p>
+      <div class="choice-grid" id="origins">
+        <label class="choice">
+          <input type="radio" name="origin" value="plains" checked>
+          <span class="choice-name">Забуті рівнини</span>
+          <p>Нащадки поселень, що пережили падіння старого світу. Витривалість і практичність.</p>
+          <span class="tag">+ здоров’я</span>
+        </label>
+        <label class="choice">
+          <input type="radio" name="origin" value="north">
+          <span class="choice-name">Північні рубежі</span>
+          <p>Люди суворих земель, де слабкість швидко стає останньою помилкою.</p>
+          <span class="tag">+ захист</span>
+        </label>
+        <label class="choice">
+          <input type="radio" name="origin" value="coast">
+          <span class="choice-name">Попелясте узбережжя</span>
+          <p>Нащадки мореплавців і шукачів стародавніх реліквій. Спритність і точність.</p>
+          <span class="tag">+ атака</span>
+        </label>
+        <label class="choice">
+          <input type="radio" name="origin" value="far">
+          <span class="choice-name">Далекий край</span>
+          <p>Нащадки прибульців, що прийшли до Великого Забуття. Їхні звичаї досі чужі.</p>
+          <span class="tag">таємне минуле</span>
+        </label>
+      </div>
+      <div class="rule"></div>
+      <div class="bonus"><strong id="origin-bonus-title">Спадок рівнин</strong><br><span id="origin-bonus-text">Більший запас здоров’я та знайомі стежки внутрішніх земель.</span></div>
+    </section>
+
+    <section class="panel">
+      <h2>Ⅲ. Шлях сили</h2>
+      <p class="intro">Клас визначає бойовий стиль і стартові характеристики.</p>
+      <div class="choice-grid class-grid">
+        <label class="choice">
+          <span class="class-symbol">⚔</span>
+          <span><input type="radio" name="heroClass" value="warrior" checked><span class="choice-name">Воїн</span></span>
+          <p>Стійкість, ближній бій і витримка під ударами.</p>
+          <span class="tag">Захисник</span>
+        </label>
+        <label class="choice">
+          <span class="class-symbol">☾</span>
+          <span><input type="radio" name="heroClass" value="assassin"><span class="choice-name">Убивця</span></span>
+          <p>Точні атаки, ризик і швидке усунення цілі.</p>
+          <span class="tag">Нападник</span>
+        </label>
+        <label class="choice">
+          <span class="class-symbol">✧</span>
+          <span><input type="radio" name="heroClass" value="mage"><span class="choice-name">Маг</span></span>
+          <p>Таємні мистецтва та руйнівні магічні прийоми.</p>
+          <span class="tag">Містик</span>
+        </label>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Ⅳ. Початкові характеристики</h2>
+      <p class="intro">Показники оновлюються одразу після зміни класу або походження.</p>
+      <div class="stats">
+        <div class="stat"><strong id="stat-hp">120</strong><span>Здоров’я</span></div>
+        <div class="stat"><strong id="stat-atk">14</strong><span>Атака</span></div>
+        <div class="stat"><strong id="stat-def">8</strong><span>Захист</span></div>
+      </div>
+      <div class="bonus"><strong id="class-summary">Воїн</strong><br><span id="class-description">Міцний боєць, який витримує удари та тримає передову.</span></div>
+      <p class="small">Демонстраційні значення лабораторії, не остаточний баланс основної гри. Захист не перевищує атаку.</p>
+    </section>
+
+    <section class="panel">
+      <h2>Ⅴ. Підсумок героя</h2>
+      <p class="intro">Перевір свій вибір перед підтвердженням.</p>
+      <div class="result-line"><span>Ім’я:</span> <strong id="summary-name">—</strong></div>
+      <div class="result-line"><span>Походження:</span> <strong id="summary-origin">Забуті рівнини</strong></div>
+      <div class="result-line"><span>Клас:</span> <strong id="summary-class">Воїн</strong></div>
+      <div class="lore" id="hero-lore">Світ ще не знає твого імені. Але старі дороги вже чекають.</div>
+      <div class="actions">
+        <button class="btn primary" type="submit">✦ Підтвердити героя</button>
+        <button class="btn" id="reset-form" type="button">↺ Скинути вибір</button>
+      </div>
+      <p id="form-status" class="status" role="status"></p>
+    </section>
+  </form>
+
+  <section class="panel result" id="confirmed" aria-live="polite">
+    <h2>Літопис прийняв твоє ім’я</h2>
+    <p class="result-name" id="confirmed-name"></p>
+    <p class="result-line" id="confirmed-details"></p>
+    <div class="lore">«Не кожен герой обирає свій шлях. Та кожен залишає слід».</div>
+    <p class="intro">Героя створено в межах лабораторії. Основна гра та збереження персонажів поки не підключені.</p>
+    <button class="btn primary" id="edit-hero" type="button">Повернутися до редагування</button>
+  </section>
+  <footer class="footer">ᛟ · ЛАБОРАТОРІЯ ІНТЕРФЕЙСУ 0.0.3 · ᛟ</footer>
+</main>
+
+<script>
+(() => {
+  const form = document.getElementById('hero-form');
+  const $ = id => document.getElementById(id);
+
+  const origins = {
+    plains: {
+      name:'Забуті рівнини',
+      title:'Спадок рівнин',
+      text:'Більший запас здоров’я та знайомі стежки внутрішніх земель.',
+      lore:'Твої предки пережили падіння міст і навчилися триматися навіть тоді, коли надія зникала.',
+      bonus:{hp:20,atk:0,def:0}
+    },
+    north: {
+      name:'Північні рубежі',
+      title:'Загартовані холодом',
+      text:'Додатковий захист і досвід життя серед суворих земель.',
+      lore:'Північ навчила тебе не відступати перед холодом, голодом і ворогом, який здається сильнішим.',
+      bonus:{hp:0,atk:0,def:2}
+    },
+    coast: {
+      name:'Попелясте узбережжя',
+      title:'Спадок мореплавців',
+      text:'Підвищена атака — наслідок вправності й точного удару.',
+      lore:'Море забрало чимало таємниць твого народу, але залишило йому гострий погляд та тверду руку.',
+      bonus:{hp:0,atk:2,def:0}
+    },
+    far: {
+      name:'Далекий край',
+      title:'Чужа пам’ять',
+      text:'Незвичне походження відкриває особливу сюжетну передумову. Числового бонусу в цій версії немає.',
+      lore:'Твій народ прийшов здалеку ще до Великого Забуття. У старих записах його називають і гостями, і провісниками.',
+      bonus:{hp:0,atk:0,def:0}
+    }
+  };
+
+  const classes = {
+    warrior:{name:'Воїн',hp:120,atk:14,def:8,desc:'Міцний боєць, який витримує удари та тримає передову.',lore:'Ти звик стояти там, де інші відступають. Твоя сила — у витримці та рішучості.'},
+    assassin:{name:'Убивця',hp:90,atk:16,def:5,desc:'Швидкий нападник, що покладається на точність і слушний момент.',lore:'Ти навчився помічати слабкість раніше, ніж ворог помітить твою присутність.'},
+    mage:{name:'Маг',hp:95,atk:12,def:6,desc:'Знавець таємних мистецтв, чия справжня сила розкриється через навички.',lore:'Ти шукаєш відповіді там, де інші бачать лише страх. Але знання завжди має ціну.'}
+  };
+
+  function selected(name) {
+    return form.querySelector('input[name="' + name + '"]:checked').value;
+  }
+
+  function update() {
+    const origin = origins[selected('origin')];
+    const heroClass = classes[selected('heroClass')];
+    const name = $('hero-name').value.trim();
+    const hp = heroClass.hp + origin.bonus.hp;
+    const atk = heroClass.atk + origin.bonus.atk;
+    const def = heroClass.def + origin.bonus.def;
+
+    $('origin-bonus-title').textContent = origin.title;
+    $('origin-bonus-text').textContent = origin.text;
+    $('stat-hp').textContent = hp;
+    $('stat-atk').textContent = atk;
+    $('stat-def').textContent = def;
+    $('class-summary').textContent = heroClass.name;
+    $('class-description').textContent = heroClass.desc;
+    $('summary-name').textContent = name || '—';
+    $('summary-origin').textContent = origin.name;
+    $('summary-class').textContent = heroClass.name;
+    $('hero-lore').textContent = origin.lore + ' ' + heroClass.lore;
+  }
+
+  form.addEventListener('input', update);
+  form.addEventListener('change', update);
+
+  $('reset-form').addEventListener('click', () => {
+    form.reset();
+    $('form-status').textContent = '';
+    $('confirmed').classList.remove('visible');
+    form.classList.remove('hidden');
+    update();
+  });
+
+  form.addEventListener('submit', event => {
+    event.preventDefault();
+    const nameInput = $('hero-name');
+    const name = nameInput.value.trim();
+    if (name.length < 2) {
+      $('form-status').textContent = 'Ім’я має містити щонайменше 2 символи.';
+      nameInput.focus();
+      return;
+    }
+    const origin = origins[selected('origin')];
+    const heroClass = classes[selected('heroClass')];
+    $('confirmed-name').textContent = name;
+    $('confirmed-details').textContent =
+      origin.name + ' · ' + heroClass.name + ' · Здоров’я ' +
+      $('stat-hp').textContent + ' · Атака ' +
+      $('stat-atk').textContent + ' · Захист ' +
+      $('stat-def').textContent;
+    form.classList.add('hidden');
+    $('confirmed').classList.add('visible');
+    $('form-status').textContent = '';
+    $('confirmed').scrollIntoView({behavior:'smooth',block:'start'});
+  });
+
+  $('edit-hero').addEventListener('click', () => {
+    $('confirmed').classList.remove('visible');
+    form.classList.remove('hidden');
+    update();
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+
+  update();
+})();
+</script>
+</body>
+</html>
