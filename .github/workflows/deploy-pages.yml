@@ -28,10 +28,15 @@ jobs:
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
+      - name: Prepare site
+        run: |
+          mkdir -p site
+          cp -R www/. site/
+
       - name: Upload site
         uses: actions/upload-pages-artifact@v3
         with:
-          path: www
+          path: site
 
       - name: Deploy
         id: deployment
