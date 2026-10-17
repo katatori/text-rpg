@@ -28,6 +28,10 @@ h2{font-size:17px;margin:0;font-family:Georgia,serif}
 .hp-fill{background:linear-gradient(90deg,#a53242,#ed7477)}
 .xp-fill{background:linear-gradient(90deg,#9c7439,#e5bc70)}
 .enemy-name{color:#ffb4b8;font-size:20px;font-family:Georgia,serif;margin-bottom:5px}
+.enemy-name.enemy-defeated{color:#8b0000;text-shadow:0 0 8px #5a0000}
+.enemy-description.enemy-defeated{color:#9b4545}
+.enemy-hp-empty{background:#5a0000!important}
+
 .enemy-description{color:var(--muted);font-size:13px;margin-bottom:12px}
 .actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}
 button{font:inherit;font-weight:650;color:#f3edf9;border:1px solid #51485e;background:#302b40;border-radius:11px;padding:13px 10px;min-height:48px;cursor:pointer}
@@ -112,6 +116,46 @@ label{display:block;margin:13px 0 6px;color:var(--muted);font-size:13px} input,s
     <button class="primary full" onclick="createCharacter()">Почати подорож</button>
   </section>
 
+  <section class="panel hidden" id="gameMainMenu">
+    <div class="panel-title"><h2>Перехрестя долі</h2><span class="level">Головне меню</span></div>
+    <p class="lore-text">Світ забув своє минуле. Твоя історія лише починається.</p>
+    <div class="menu-divider"><span>✧</span></div>
+
+    <section class="panel">
+      <div class="panel-title"><h2>Пригоди</h2></div>
+      <p>Досліджуй землі, знаходь завдання та зустрічай ворогів.</p>
+      <button class="primary full" onclick="showLocations()">Обрати локацію</button>
+      <button class="full" onclick="startRandomBattle()">Випадковий бій</button>
+    </section>
+
+    <section class="panel">
+      <div class="panel-title"><h2>Торговий майданчик</h2></div>
+      <button class="full" onclick="showUnderDevelopment('Ринок')">Ринок · У розробці</button>
+    </section>
+
+    <section class="panel">
+      <div class="panel-title"><h2>Персонаж</h2></div>
+      <button class="full" onclick="showHero()">Герой</button>
+      <button class="full" onclick="showUnderDevelopment('Навички')">Навички · У розробці</button>
+    </section>
+
+    <button class="full" onclick="showMainMenu()">До стартового меню</button>
+  </section>
+
+  <section class="panel hidden" id="locationsScreen">
+    <div class="panel-title"><h2>Локації</h2><span class="level">Пригоди</span></div>
+    <button class="primary full" onclick="enterLocation('Забуті рівнини')">Забуті рівнини · Низька небезпека</button>
+    <button class="full" onclick="showUnderDevelopment('Шепітний ліс')">Шепітний ліс · Незабаром</button>
+    <button class="full" onclick="showUnderDevelopment('Фортеця Попелу')">Фортеця Попелу · Незабаром</button>
+    <button class="full" onclick="showGameMainMenu()">Назад</button>
+  </section>
+
+  <section class="panel hidden" id="underDevelopmentScreen">
+    <div class="panel-title"><h2 id="underDevelopmentTitle">У розробці</h2></div>
+    <p>Цей розділ з'явиться в наступних оновленнях.</p>
+    <button class="primary full" onclick="showGameMainMenu()">Назад до головного меню</button>
+  </section>
+
   <div id="gameUI" class="hidden">
   <section class="panel">
     <div class="panel-title">
@@ -146,7 +190,8 @@ label{display:block;margin:13px 0 6px;color:var(--muted);font-size:13px} input,s
       <div class="enemy-description" id="enemyDescription"></div>
       <div class="bar-label"><span>Здоров’я ворога</span><span id="enemyHpText"></span></div>
       <div class="bar"><div class="fill hp-fill" id="enemyHpBar"></div></div>
-      <div class="actions">
+      <button id="continueAdventureButton" class="primary full hidden" onclick="continueAdventure()">Продовжити пригоду</button>
+      <div class="actions" id="battleActions">
         <button class="danger" onclick="attack()">⚔ Атакувати</button>
         <button onclick="defend()">🛡 Захищатися</button>
         <button onclick="usePotion()">✚ Випити зілля</button>
@@ -179,13 +224,15 @@ const freshPlayer = () => ({
   name: "", heroClass: "", origin: "",
   level: 1, xp: 0, hp: 100, maxHp: 100,
   strength: 10, defense: 4, agility: 5,
-  potions: 3, gold: 0, wins: 0
+  potions: 3, gold: 0, wins: 0, introCompleted: false
 });
 
 let player = loadPlayer();
 let hasCharacter = !!player;
 if (!player) player = freshPlayer();
 let enemy = null;
+let defeatedEnemy = null;
+let currentLocation = "Забуті рівнини";
 let guarding = false;
 let logEntries = ["Ти ступив на шлях пригод. Тримай зброю напоготові."];
 
@@ -247,27 +294,33 @@ function render() {
   document.getElementById("gold").textContent = player.gold;
   document.getElementById("wins").textContent = player.wins;
 
-  document.getElementById("exploration").classList.toggle("hidden", !!enemy || player.hp <= 0);
-  document.getElementById("battle").classList.toggle("hidden", !enemy || player.hp <= 0);
+  const visibleEnemy = enemy || defeatedEnemy;
+  document.getElementById("exploration").classList.toggle("hidden", !!visibleEnemy || player.hp <= 0);
+  document.getElementById("battle").classList.toggle("hidden", !visibleEnemy || player.hp <= 0);
   document.getElementById("defeat").classList.toggle("hidden", player.hp > 0);
 
   document.getElementById("battleStatus").textContent =
-    player.hp <= 0 ? "Поразка" : enemy ? "Бій триває" : "Можна вирушати";
+    player.hp <= 0 ? "Поразка" : enemy ? "Бій триває" : defeatedEnemy ? "Перемога" : "Можна вирушати";
 
-  if (enemy) {
-    document.getElementById("enemyName").textContent = enemy.name;
-    document.getElementById("enemyDescription").textContent = enemy.description;
-    document.getElementById("enemyHpText").textContent = enemy.hp + " / " + enemy.maxHp;
+  if (visibleEnemy) {
+    document.getElementById("enemyName").textContent = visibleEnemy.name;
+    document.getElementById("enemyDescription").textContent = visibleEnemy.description;
+    document.getElementById("enemyHpText").textContent = visibleEnemy.hp + " / " + visibleEnemy.maxHp;
     document.getElementById("enemyHpBar").style.width =
-      Math.max(0, enemy.hp / enemy.maxHp * 100) + "%";
+      Math.max(0, visibleEnemy.hp / visibleEnemy.maxHp * 100) + "%";
+    document.getElementById("enemyName").classList.toggle("enemy-defeated", !enemy && !!defeatedEnemy);
+    document.getElementById("enemyDescription").classList.toggle("enemy-defeated", !enemy && !!defeatedEnemy);
+    document.getElementById("enemyHpBar").classList.toggle("enemy-hp-empty", !enemy && !!defeatedEnemy);
   }
+  document.getElementById("battleActions").classList.toggle("hidden", !enemy);
+  document.getElementById("continueAdventureButton").classList.toggle("hidden", !defeatedEnemy || player.hp <= 0);
   document.querySelector('button[onclick="usePotion()"]').disabled =
     player.potions <= 0 || !enemy || player.hp <= 0;
   savePlayer();
 }
 
 function hideAllScreens() {
-  ["mainMenuScreen", "characterSelectionScreen", "setupScreen", "gameUI"].forEach(id => {
+  ["mainMenuScreen", "characterSelectionScreen", "setupScreen", "gameMainMenu", "locationsScreen", "underDevelopmentScreen", "gameUI"].forEach(id => {
     document.getElementById(id).classList.add("hidden");
   });
 }
@@ -299,6 +352,49 @@ function showCharacterSelection() {
       " · Рівень " + saved.level;
     continueButton.disabled = false;
   }
+}
+
+function showGameMainMenu() {
+  hideAllScreens();
+  document.getElementById("gameMainMenu").classList.remove("hidden");
+}
+
+function showLocations() {
+  hideAllScreens();
+  document.getElementById("locationsScreen").classList.remove("hidden");
+}
+
+function showUnderDevelopment(name) {
+  hideAllScreens();
+  document.getElementById("underDevelopmentTitle").textContent = name + " — у розробці";
+  document.getElementById("underDevelopmentScreen").classList.remove("hidden");
+}
+
+function showHero() {
+  hideAllScreens();
+  document.getElementById("gameUI").classList.remove("hidden");
+  render();
+  document.getElementById("exploration").classList.add("hidden");
+  document.getElementById("battle").classList.add("hidden");
+  document.getElementById("defeat").classList.add("hidden");
+}
+
+function enterLocation(name) {
+  currentLocation = name;
+  enemy = null;
+  defeatedEnemy = null;
+  hideAllScreens();
+  document.getElementById("gameUI").classList.remove("hidden");
+  render();
+}
+
+function startRandomBattle() {
+  hideAllScreens();
+  document.getElementById("gameUI").classList.remove("hidden");
+  enemy = null;
+  defeatedEnemy = null;
+  render();
+  findEnemy();
 }
 
 function continueWithCharacter() {
@@ -343,6 +439,7 @@ function createCharacter() {
 
 function findEnemy() {
   if (player.hp <= 0 || enemy) return;
+  defeatedEnemy = null;
   const scale = player.level - 1;
   const choices = [
     { name: "Печерний гоблін", description: "Малий, але підступний мешканець руїн.", hp: 35, attack: 7, defense: 1, xp: 35, gold: 8 },
@@ -405,6 +502,7 @@ function flee() {
   if (Math.random() < 0.7) {
     addLog("Тобі вдалося втекти. Цього разу без нагороди.", "gold");
     enemy = null;
+    defeatedEnemy = null;
     guarding = false;
     render();
   } else {
@@ -431,6 +529,8 @@ function enemyTurn(blocked) {
 
 function winBattle() {
   const defeated = enemy;
+  defeated.hp = 0;
+  defeatedEnemy = { ...defeated };
   enemy = null;
   player.wins++;
   player.xp += defeated.xp;
@@ -447,7 +547,23 @@ function winBattle() {
     player.agility += 1;
     addLog("Новий рівень: " + player.level + "! Сила +2, захист +1, спритність +1. Здоров'я зросло.", "good");
   }
+
   render();
+
+  if (player.wins >= 3 && !player.introCompleted) {
+    player.introCompleted = true;
+    savePlayer();
+    addLog("Вітаємо, мандрівнику! Ти здобув перші три перемоги. Твоя справжня пригода починається!", "gold");
+    render();
+    alert("Вітаємо, герою!\n\nТи здобув перші три перемоги й готовий до нових пригод.");
+    defeatedEnemy = null;
+    showGameMainMenu();
+  }
+}
+function continueAdventure() {
+  if (!defeatedEnemy || player.hp <= 0) return;
+  defeatedEnemy = null;
+  findEnemy();
 }
 
 function recover() {
