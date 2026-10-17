@@ -36,66 +36,53 @@ button.primary{background:linear-gradient(135deg,#87653d,#58432f);border-color:#
 button.danger{border-color:#713b4a;background:#422531}
 button:disabled{opacity:.38;cursor:not-allowed}
 button.full{width:100%;margin-top:12px}
-.log{min-height:
-<!DOCTYPE html>
-<html lang="uk">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="theme-color" content="#101018">
-<title>Хроніки Забутих Земель</title>
-<style>
-:root{color-scheme:dark;--bg:#101018;--panel:#1b1b28;--line:#383548;--gold:#e5bc70;--muted:#aaa8bd;--red:#d85d65;--green:#68c995}
-*{box-sizing:border-box}
-body{margin:0;background:radial-gradient(ellipse at top,#28233a 0%,var(--bg) 65%);color:#eeeaf6;font:16px/1.45 system-ui,-apple-system,sans-serif;min-height:100vh}
-main{width:min(100%,600px);margin:auto;padding:20px 15px 36px}
-header{text-align:center;padding:12px 0 22px}
-.eyebrow{color:var(--gold);font-size:11px;letter-spacing:3px;text-transform:uppercase}
-h1{font-family:Georgia,serif;font-size:clamp(27px,7vw,38px);line-height:1.15;margin:9px 0;color:var(--gold)}
-.subtitle{color:var(--muted);font-size:13px}
-.panel{background:linear-gradient(145deg,#222130,#191923);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:13px;box-shadow:0 8px 25px #0002}
-.panel-title{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:13px}
-h2{font-size:17px;margin:0;font-family:Georgia,serif}
-.level{color:var(--gold);font-size:12px}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:13px}
-.stat{background:#11111a;border-radius:10px;padding:10px 6px;text-align:center}
-.stat strong{display:block;font-size:20px;color:#f5e5c5}
-.stat span{font-size:11px;color:var(--muted)}
-.bar-label{display:flex;justify-content:space-between;font-size:12px;margin:10px 0 5px;color:var(--muted)}
-.bar{height:9px;background:#0d0d14;border-radius:9px;overflow:hidden}
-.fill{height:100%;width:100%;transition:width .2s}
-.hp-fill{background:linear-gradient(90deg,#a53242,#ed7477)}
-.xp-fill{background:linear-gradient(90deg,#9c7439,#e5bc70)}
-.enemy-name{color:#ffb4b8;font-size:20px;font-family:Georgia,serif;margin-bottom:5px}
-.enemy-description{color:var(--muted);font-size:13px;margin-bottom:12px}
-.actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}
-button{font:inherit;font-weight:650;color:#f3edf9;border:1px solid #51485e;background:#302b40;border-radius:11px;padding:13px 10px;min-height:48px;cursor:pointer}
-button:active{transform:scale(.98)}
-button.primary{background:linear-gradient(135deg,#87653d,#58432f);border-color:#ad8952;color:#fff5dd}
-button.danger{border-color:#713b4a;background:#422531}
-button:disabled{opacity:.38;cursor:not-allowed}
-button.full{width:100%;margin-top:12px}
 .log{min-height:100px;max-height:220px;overflow:auto;display:flex;flex-direction:column;gap:7px}
 .log p{margin:0;padding:8px 10px;border-left:2px solid #615674;background:#12121b;border-radius:0 7px 7px 0;font-size:13px;color:#d3cfdf}
 .log p.good{border-color:var(--green)}.log p.bad{border-color:var(--red)}.log p.gold{border-color:var(--gold)}
 .note{color:var(--muted);font-size:12px;text-align:center;margin-top:20px}
 label{display:block;margin:13px 0 6px;color:var(--muted);font-size:13px} input,select{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;background:#11111a;color:#eeeaf6;font:inherit} .hidden{display:none!important}
-</style>
+
+.version-label{display:flex;justify-content:space-between;align-items:center;color:#827b8e;font-size:10px;letter-spacing:1.5px;margin:2px 2px 28px}
+.version-label span{color:var(--gold);letter-spacing:1px}
+.intro-header{padding:18px 8px 28px}
+.intro-header .eyebrow{font-size:10px;letter-spacing:4px;color:#b99a69}
+.intro-header h1{font-size:clamp(34px,9vw,46px);line-height:1.12;text-shadow:0 3px 22px #c09a4b24;margin:17px 0}
+.intro-header .subtitle{max-width:300px;margin:0 auto;font-family:Georgia,serif;font-style:italic;line-height:1.7}
+.intro-panel{padding:24px 20px 20px;background:linear-gradient(160deg,#211f29,#131319 75%);border-color:#514432;box-shadow:0 15px 45px #0005}
+.ruin-mark{text-align:center;color:#b99a69;font-size:25px;margin:0 0 14px}
+.lore-text{font-family:Georgia,serif;font-size:14px;line-height:1.9;color:#c5becc;text-align:center;margin:0}
+.story-prompt{text-align:center;color:#e0c58f;font-family:Georgia,serif;font-style:italic;font-size:14px;line-height:1.8;margin:22px 0 10px}
+.menu-divider{display:flex;align-items:center;gap:12px;color:#9a7b4c;margin:17px 0}
+.menu-divider:before,.menu-divider:after{content:"";height:1px;flex:1;background:linear-gradient(90deg,transparent,#645037)}
+.menu-divider:after{transform:scaleX(-1)}
+.intro-panel button{letter-spacing:.2px}
+.intro-panel button.primary{background:linear-gradient(135deg,#8d7046,#4e3b29);border-color:#b3945d}
+.intro-panel button:not(.primary){background:#19171d;border-color:#49404a}
+.menu-footer{text-align:center;color:#777080;font-size:9px;letter-spacing:3px;margin-top:24px}
+.version-bottom{text-align:center;color:#625d6b;font-size:9px;letter-spacing:1.5px;margin:26px 0 8px}
+\n</style>
 </head>
 <body>
 <main>
-  <header>
-    <div class="eyebrow">Текстова рольова гра</div>
-    <h1>Хроніки Забутих Земель</h1>
-    <div class="subtitle">Твоя історія починається серед руїн старого світу</div>
+  <div class="version-label">ХРОНІКИ ЗАБУТИХ ЗЕМЕЛЬ <span>v0.0.1</span></div>
+
+  <header class="intro-header">
+    <div class="eyebrow">ЛЕГЕНДИ НЕ ВМИРАЮТЬ</div>
+    <h1>Хроніки<br>Забутих Земель</h1>
+    <div class="subtitle">Світ забув своє минуле. Та минуле не забуло світ.</div>
   </header>
 
-  <section class="panel" id="mainMenuScreen">
-    <div class="panel-title"><h2>Головне меню</h2></div>
-    <p class="subtitle">Обери, з чого почнеться твоя історія.</p>
-    <button class="primary full" onclick="showCharacterCreation()">Нова подорож</button>
-    <button class="full" onclick="showCharacterSelection()">Вибрати персонажа</button>
+  <section class="panel intro-panel" id="mainMenuScreen">
+    <div class="ruin-mark">✦</div>
+    <p class="lore-text">Колись тут панувала цивілізація, що наважилася зазирнути за межі відомого. Потім настало Велике Забуття. Міста спорожніли, старі клятви втратили сенс, а серед руїн залишилися таємниці, за які досі доводиться платити.</p>
+    <p class="story-prompt">Твоя історія ще не написана.<br>Ким ти станеш — залежить від твоїх рішень.</p>
+    <div class="menu-divider"><span>✧</span></div>
+    <button class="primary full" onclick="showCharacterSelection()">Обрати персонажа</button>
+    <button class="full" onclick="showCharacterCreation()">Створити персонажа</button>
+    <div class="menu-footer">ОБЕРИ СВІЙ ШЛЯХ</div>
   </section>
+
+  <div class="version-bottom">ХРОНІКИ ЗАБУТИХ ЗЕМЕЛЬ · ВЕРСІЯ 0.0.1</div>
 
   <section class="panel hidden" id="characterSelectionScreen">
     <div class="panel-title"><h2>Вибір персонажа</h2></div>
