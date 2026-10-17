@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#101018">
+<title>Хроніки Забутих Земель</title>
+<style>
+:root{color-scheme:dark;--bg:#101018;--panel:#1b1b28;--line:#383548;--gold:#e5bc70;--muted:#aaa8bd;--red:#d85d65;--green:#68c995}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at top,#28233a 0%,var(--bg) 65%);color:#eeeaf6;font:16px/1.45 system-ui,-apple-system,sans-serif;min-height:100vh}
+main{width:min(100%,600px);margin:auto;padding:20px 15px 36px}
+header{text-align:center;padding:12px 0 22px}
+.eyebrow{color:var(--gold);font-size:11px;letter-spacing:3px;text-transform:uppercase}
+h1{font-family:Georgia,serif;font-size:clamp(27px,7vw,38px);line-height:1.15;margin:9px 0;color:var(--gold)}
+.subtitle{color:var(--muted);font-size:13px}
+.panel{background:linear-gradient(145deg,#222130,#191923);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:13px;box-shadow:0 8px 25px #0002}
+.panel-title{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:13px}
+h2{font-size:17px;margin:0;font-family:Georgia,serif}
+.level{color:var(--gold);font-size:12px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:13px}
+.stat{background:#11111a;border-radius:10px;padding:10px 6px;text-align:center}
+.stat strong{display:block;font-size:20px;color:#f5e5c5}
+.stat span{font-size:11px;color:var(--muted)}
+.bar-label{display:flex;justify-content:space-between;font-size:12px;margin:10px 0 5px;color:var(--muted)}
+.bar{height:9px;background:#0d0d14;border-radius:9px;overflow:hidden}
+.fill{height:100%;width:100%;transition:width .2s}
+.hp-fill{background:linear-gradient(90deg,#a53242,#ed7477)}
+.xp-fill{background:linear-gradient(90deg,#9c7439,#e5bc70)}
+.enemy-name{color:#ffb4b8;font-size:20px;font-family:Georgia,serif;margin-bottom:5px}
+.enemy-description{color:var(--muted);font-size:13px;margin-bottom:12px}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}
+button{font:inherit;font-weight:650;color:#f3edf9;border:1px solid #51485e;background:#302b40;border-radius:11px;padding:13px 10px;min-height:48px;cursor:pointer}
+button:active{transform:scale(.98)}
+button.primary{background:linear-gradient(135deg,#87653d,#58432f);border-color:#ad8952;color:#fff5dd}
+button.danger{border-color:#713b4a;background:#422531}
+button:disabled{opacity:.38;cursor:not-allowed}
+button.full{width:100%;margin-top:12px}
+.log{min-height:
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#101018">
+<title>Хроніки Забутих Земель</title>
+<style>
+:root{color-scheme:dark;--bg:#101018;--panel:#1b1b28;--line:#383548;--gold:#e5bc70;--muted:#aaa8bd;--red:#d85d65;--green:#68c995}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at top,#28233a 0%,var(--bg) 65%);color:#eeeaf6;font:16px/1.45 system-ui,-apple-system,sans-serif;min-height:100vh}
+main{width:min(100%,600px);margin:auto;padding:20px 15px 36px}
+header{text-align:center;padding:12px 0 22px}
+.eyebrow{color:var(--gold);font-size:11px;letter-spacing:3px;text-transform:uppercase}
+h1{font-family:Georgia,serif;font-size:clamp(27px,7vw,38px);line-height:1.15;margin:9px 0;color:var(--gold)}
+.subtitle{color:var(--muted);font-size:13px}
+.panel{background:linear-gradient(145deg,#222130,#191923);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:13px;box-shadow:0 8px 25px #0002}
+.panel-title{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:13px}
+h2{font-size:17px;margin:0;font-family:Georgia,serif}
+.level{color:var(--gold);font-size:12px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:13px}
+.stat{background:#11111a;border-radius:10px;padding:10px 6px;text-align:center}
+.stat strong{display:block;font-size:20px;color:#f5e5c5}
+.stat span{font-size:11px;color:var(--muted)}
+.bar-label{display:flex;justify-content:space-between;font-size:12px;margin:10px 0 5px;color:var(--muted)}
+.bar{height:9px;background:#0d0d14;border-radius:9px;overflow:hidden}
+.fill{height:100%;width:100%;transition:width .2s}
+.hp-fill{background:linear-gradient(90deg,#a53242,#ed7477)}
+.xp-fill{background:linear-gradient(90deg,#9c7439,#e5bc70)}
+.enemy-name{color:#ffb4b8;font-size:20px;font-family:Georgia,serif;margin-bottom:5px}
+.enemy-description{color:var(--muted);font-size:13px;margin-bottom:12px}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}
+button{font:inherit;font-weight:650;color:#f3edf9;border:1px solid #51485e;background:#302b40;border-radius:11px;padding:13px 10px;min-height:48px;cursor:pointer}
+button:active{transform:scale(.98)}
+button.primary{background:linear-gradient(135deg,#87653d,#58432f);border-color:#ad8952;color:#fff5dd}
+button.danger{border-color:#713b4a;background:#422531}
+button:disabled{opacity:.38;cursor:not-allowed}
+button.full{width:100%;margin-top:12px}
+.log{min-height:100px;max-height:220px;overflow:auto;display:flex;flex-direction:column;gap:7px}
+.log p{margin:0;padding:8px 10px;border-left:2px solid #615674;background:#12121b;border-radius:0 7px 7px 0;font-size:13px;color:#d3cfdf}
+.log p.good{border-color:var(--green)}.log p.bad{border-color:var(--red)}.log p.gold{border-color:var(--gold)}
+.note{color:var(--muted);font-size:12px;text-align:center;margin-top:20px}
+label{display:block;margin:13px 0 6px;color:var(--muted);font-size:13px} input,select{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;background:#11111a;color:#eeeaf6;font:inherit} .hidden{display:none!important}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="eyebrow">Текстова рольова гра</div>
+    <h1>Хроніки Забутих Земель</h1>
+    <div class="subtitle">Твоя історія починається серед руїн старого світу</div>
+  </header>
+
+  <section class="panel" id="setupScreen">
+    <div class="panel-title"><h2>Створи свого героя</h2></div>
+    <label for="heroName">Ім’я персонажа</label>
+    <input id="heroName" maxlength="20" placeholder="Введи ім’я">
+    <label for="heroOrigin">Походження</label>
+    <select id="heroOrigin">
+      <option value="plains">Забуті рівнини</option>
+      <option value="north">Північні рубежі</option>
+      <option value="coast">Попелясте узбережжя</option>
+      <option value="far">Далекий край</option>
+    </select>
+    <label for="heroClass">Клас</label>
+    <select id="heroClass">
+      <option value="warrior">Воїн</option>
+      <option value="assassin">Убивця</option>
+      <option value="mage">Маг</option>
+    </select>
+    <button class="primary full" onclick="createCharacter()">Почати подорож</button>
+  </section>
+
+  <div id="gameUI" class="hidden">
+  <section class="panel">
+    <div class="panel-title">
+      <h2>Мандрівник</h2>
+      <span id="heroIdentity" class="level"></span>
+      <span class="level" id="level">Рівень 1</span>
+    </div>
+    <div class="bar-label"><span>Здоров’я</span><span id="hpText">100 / 100</span></div>
+    <div class="bar"><div class="fill hp-fill" id="hpBar"></div></div>
+    <div class="bar-label"><span>Досвід</span><span id="xpText">0 / 100 XP</span></div>
+    <div class="bar"><div class="fill xp-fill" id="xpBar"></div></div>
+    <div class="stats">
+      <div class="stat"><strong id="strength">10</strong><span>Сила</span></div>
+      <div class="stat"><strong id="defense">4</strong><span>Захист</span></div>
+      <div class="stat"><strong id="agility">5</strong><span>Спритність</span></div>
+    </div>
+    <div class="stats">
+      <div class="stat"><strong id="potions">3</strong><span>Зілля</span></div>
+      <div class="stat"><strong id="gold">0</strong><span>Золото</span></div>
+      <div class="stat"><strong id="wins">0</strong><span>Перемоги</span></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-title"><h2>Пригода</h2><span class="level" id="battleStatus">Спокійно</span></div>
+    <div id="exploration">
+      <p>Вітер шепоче поміж зруйнованих колон. Десь неподалік чути кроки. Кожна пригода може принести досвід і золото — або коштувати здоров’я.</p>
+      <button class="primary full" onclick="findEnemy()">Вирушити на пошуки ворога</button>
+    </div>
+    <div id="battle" class="hidden">
+      <div class="enemy-name" id="enemyName">Невідомий ворог</div>
+      <div class="enemy-description" id="enemyDescription"></div>
+      <div class="bar-label"><span>Здоров’я ворога</span><span id="enemyHpText"></span></div>
+      <div class="bar"><div class="fill hp-fill" id="enemyHpBar"></div></div>
+      <div class="actions">
+        <button class="danger" onclick="attack()">⚔ Атакувати</button>
+        <button onclick="defend()">🛡 Захищатися</button>
+        <button onclick="usePotion()">✚ Випити зілля</button>
+        <button onclick="flee()">↗ Спробувати втекти</button>
+      </div>
+    </div>
+    <div id="defeat" class="hidden">
+      <p>Ти знепритомнів. Подорож ще не завершена, але цього разу доведеться відступити.</p>
+      <button class="primary full" onclick="recover()">Повернутися до тями</button>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-title"><h2>Хроніка подій</h2><span class="level">Останні події</span></div>
+    <div class="log" id="log" aria-live="polite">
+      <p>Ти ступив на шлях пригод. Тримай зброю напоготові.</p>
+    </div>
+    <button class="full" onclick="resetGame()">Почати спочатку</button>
+  </section>
+  </div>
+
+  <div class="note">Прототип 0.2 · Прогрес зберігається на цьому пристрої</div>
+</main>
+
+<script>
+"use strict";
+
+const SAVE_KEY = "forgotten-lands-player-v3";
+const freshPlayer = () => ({
+  name: "", heroClass: "", origin: "",
+  level: 1, xp: 0, hp: 100, maxHp: 100,
+  strength: 10, defense: 4, agility: 5,
+  potions: 3, gold: 0, wins: 0
+});
+
+let player = loadPlayer();
+let hasCharacter = !!player;
+if (!player) player = freshPlayer();
+let enemy = null;
+let guarding = false;
+let logEntries = ["Ти ступив на шлях пригод. Тримай зброю напоготові."];
+
+function loadPlayer() {
+  try {
+    const saved = localStorage.getItem(SAVE_KEY);
+    if (saved) return { ...freshPlayer(), ...JSON.parse(saved) };
+    return null;
+  } catch (e) {
+    console.warn("Не вдалося прочитати збереження", e);
+  }
+  return null;
+}
+
+function savePlayer() {
+  try {
+    localStorage.setItem(SAVE_KEY, JSON.stringify(player));
+  } catch (e) {
+    console.warn("Не вдалося зберегти прогрес", e);
+  }
+}
+
+function addLog(message, type = "") {
+  logEntries.unshift({ message, type });
+  logEntries = logEntries.slice(0, 18);
+  renderLog();
+}
+
+function renderLog() {
+  const box = document.getElementById("log");
+  box.innerHTML = "";
+  logEntries.forEach(entry => {
+    const item = document.createElement("p");
+    if (typeof entry === "string") {
+      item.textContent = entry;
+    } else {
+      item.textContent = entry.message;
+      item.className = entry.type || "";
+    }
+    box.appendChild(item);
+  });
+}
+
+function render() {
+  const classNames = { warrior: "Воїн", assassin: "Убивця", mage: "Маг" };
+  const originNames = { plains: "Забуті рівнини", north: "Північні рубежі", coast: "Попелясте узбережжя", far: "Далекий край" };
+  const identity = [player.name, classNames[player.heroClass], originNames[player.origin]].filter(Boolean).join(" · ");
+  document.getElementById("heroIdentity").textContent = identity;
+  document.getElementById("level").textContent = "Рівень " + player.level;
+  document.getElementById("hpText").textContent = player.hp + " / " + player.maxHp;
+  document.getElementById("hpBar").style.width = (player.hp / player.maxHp * 100) + "%";
+  const needed = player.level * 100;
+  document.getElementById("xpText").textContent = player.xp + " / " + needed + " XP";
+  document.getElementById("xpBar").style.width = Math.min(100, player.xp / needed * 100) + "%";
+  document.getElementById("strength").textContent = player.strength;
+  document.getElementById("defense").textContent = player.defense;
+  document.getElementById("agility").textContent = player.agility;
+  document.getElementById("potions").textContent = player.potions;
+  document.getElementById("gold").textContent = player.gold;
+  document.getElementById("wins").textContent = player.wins;
+
+  document.getElementById("exploration").classList.toggle("hidden", !!enemy || player.hp <= 0);
+  document.getElementById("battle").classList.toggle("hidden", !enemy || player.hp <= 0);
+  document.getElementById("defeat").classList.toggle("hidden", player.hp > 0);
+
+  document.getElementById("battleStatus").textContent =
+    player.hp <= 0 ? "Поразка" : enemy ? "Бій триває" : "Можна вирушати";
+
+  if (enemy) {
+    document.getElementById("enemyName").textContent = enemy.name;
+    document.getElementById("enemyDescription").textContent = enemy.description;
+    document.getElementById("enemyHpText").textContent = enemy.hp + " / " + enemy.maxHp;
+    document.getElementById("enemyHpBar").style.width =
+      Math.max(0, enemy.hp / enemy.maxHp * 100) + "%";
+  }
+  document.querySelector('button[onclick="usePotion()"]').disabled =
+    player.potions <= 0 || !enemy || player.hp <= 0;
+  savePlayer();
+}
+
+function createCharacter() {
+  const name = document.getElementById("heroName").value.trim();
+  const heroClass = document.getElementById("heroClass").value;
+  const origin = document.getElementById("heroOrigin").value;
+  if (!name) { alert("Введи ім’я персонажа."); return; }
+  const stats = {
+    warrior: { hp: 120, strength: 14, defense: 8, agility: 4 },
+    assassin: { hp: 90, strength: 16, defense: 5, agility: 9 },
+    mage: { hp: 95, strength: 12, defense: 6, agility: 6 }
+  };
+  player = { ...freshPlayer(), name, heroClass, origin, maxHp: stats[heroClass].hp, hp: stats[heroClass].hp, strength: stats[heroClass].strength, defense: stats[heroClass].defense, agility: stats[heroClass].agility };
+  if (origin === "plains") { player.maxHp += 20; player.hp += 20; }
+  if (origin === "north") player.defense += 2;
+  if (origin === "coast") player.strength += 2;
+  hasCharacter = true;
+  savePlayer();
+  document.getElementById("setupScreen").classList.add("hidden");
+  document.getElementById("gameUI").classList.remove("hidden");
+  addLog("Подорож починається, " + player.name + ". Попереду — невідомі землі.");
+  render();
+  findEnemy();
+}
+
+function findEnemy() {
+  if (player.hp <= 0 || enemy) return;
+  const scale = player.level - 1;
+  const choices = [
+    { name: "Печерний гоблін", description: "Малий, але підступний мешканець руїн.", hp: 35, attack: 7, defense: 1, xp: 35, gold: 8 },
+    { name: "Здичавілий вовк", description: "Швидкий хижак, що полює на самотніх мандрівників.", hp: 42, attack: 8, defense: 2, xp: 40, gold: 10 },
+    { name: "Сторож руїн", description: "Стародавній воїн, що досі виконує забутий наказ.", hp: 55, attack: 10, defense: 4, xp: 55, gold: 15 }
+  ];
+  const template = choices[Math.floor(Math.random() * choices.length)];
+  enemy = {
+    ...template,
+    maxHp: template.hp + scale * 12,
+    hp: template.hp + scale * 12,
+    attack: template.attack + scale * 2,
+    defense: template.defense + Math.floor(scale / 2),
+    xp: template.xp + scale * 10,
+    gold: template.gold + scale * 3
+  };
+  guarding = false;
+  addLog("На твоєму шляху з'явився ворог: " + enemy.name + ".", "bad");
+  render();
+}
+
+function attack() {
+  if (!enemy || player.hp <= 0) return;
+  const critical = Math.random() < Math.min(0.3, player.agility * 0.025);
+  const raw = player.strength + Math.floor(Math.random() * 7) - 2;
+  const damage = Math.max(1, raw - enemy.defense) * (critical ? 2 : 1);
+  enemy.hp = Math.max(0, enemy.hp - damage);
+  addLog((critical ? "Критичний удар! " : "Ти влучаєш. ") +
+    enemy.name + " втрачає " + damage + " од. здоров'я.", "good");
+
+  if (enemy.hp <= 0) {
+    winBattle();
+    return;
+  }
+  enemyTurn(false);
+}
+
+function defend() {
+  if (!enemy || player.hp <= 0) return;
+  guarding = true;
+  addLog("Ти займаєш оборонну позицію й готуєшся прийняти удар.");
+  enemyTurn(true);
+}
+
+function usePotion() {
+  if (!enemy || player.hp <= 0 || player.potions <= 0) return;
+  if (player.hp === player.maxHp) {
+    addLog("Здоров'я вже повне. Збережи зілля для важчого моменту.");
+    return;
+  }
+  const healed = Math.min(35, player.maxHp - player.hp);
+  player.hp += healed;
+  player.potions--;
+  addLog("Ти випиваєш зілля й відновлюєш " + healed + " од. здоров'я.", "good");
+  enemyTurn(false);
+}
+
+function flee() {
+  if (!enemy || player.hp <= 0) return;
+  if (Math.random() < 0.7) {
+    addLog("Тобі вдалося втекти. Цього разу без нагороди.", "gold");
+    enemy = null;
+    guarding = false;
+    render();
+  } else {
+    addLog("Шлях перекрито! Ворог не дає втекти.", "bad");
+    enemyTurn(false);
+  }
+}
+
+function enemyTurn(blocked) {
+  if (!enemy || player.hp <= 0) return;
+  const raw = enemy.attack + Math.floor(Math.random() * 5) - 1;
+  const reduction = blocked ? Math.floor(player.defense * 0.8) + 5 : player.defense;
+  const damage = Math.max(1, raw - reduction);
+  player.hp = Math.max(0, player.hp - damage);
+  addLog(enemy.name + " завдає тобі " + damage + " од. шкоди" +
+    (blocked ? ", але твій захист пом'якшує удар." : "."), "bad");
+  guarding = false;
+
+  if (player.hp <= 0) {
+    addLog("Ти зазнав поразки. Частина сил повернеться після відпочинку.", "bad");
+  }
+  render();
+}
+
+function winBattle() {
+  const defeated = enemy;
+  enemy = null;
+  player.wins++;
+  player.xp += defeated.xp;
+  player.gold += defeated.gold;
+  addLog("Перемога! +" + defeated.xp + " XP, +" + defeated.gold + " золота.", "gold");
+
+  while (player.xp >= player.level * 100) {
+    player.xp -= player.level * 100;
+    player.level++;
+    player.maxHp += 15;
+    player.hp = Math.min(player.maxHp, player.hp + 25);
+    player.strength += 2;
+    player.defense += 1;
+    player.agility += 1;
+    addLog("Новий рівень: " + player.level + "! Сила +2, захист +1, спритність +1. Здоров'я зросло.", "good");
+  }
+  render();
+}
+
+function recover() {
+  player.hp = Math.max(1, Math.ceil(player.maxHp * 0.6));
+  enemy = null;
+  addLog("Ти приходиш до тями й відновлюєш " + player.hp + " од. здоров'я.", "good");
+  render();
+}
+
+function resetGame() {
+  if (!confirm("Скинути рівень, характеристики, золото та весь збережений прогрес?")) return;
+  localStorage.removeItem(SAVE_KEY);
+  player = freshPlayer();
+  hasCharacter = false;
+  enemy = null;
+  guarding = false;
+  logEntries = ["Створи нового героя, щоб розпочати подорож."];
+  document.getElementById("setupScreen").classList.remove("hidden");
+  document.getElementById("gameUI").classList.add("hidden");
+  document.getElementById("heroName").value = "";
+  renderLog();
+  render();
+}
+
+function initializeGame() {
+  renderLog();
+  if (hasCharacter) {
+    document.getElementById("setupScreen").classList.add("hidden");
+    document.getElementById("gameUI").classList.remove("hidden");
+  } else {
+    document.getElementById("setupScreen").classList.remove("hidden");
+    document.getElementById("gameUI").classList.add("hidden");
+  }
+  render();
+}
+
+initializeGame();
+</script>
+</body>
+</html>
