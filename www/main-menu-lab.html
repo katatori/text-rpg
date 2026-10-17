@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b0a0d">
+<title>Лабораторія головного меню — 0.0.1</title>
+<style>
+:root {
+  --bg: #0b0a0d;
+  --panel: #151218;
+  --gold: #c9a45c;
+  --gold-light: #f0d99a;
+  --text: #e8dfd0;
+  --muted: #918779;
+  --border: #554329;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  padding: 24px 18px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--text);
+  background:
+    radial-gradient(ellipse at 50% 35%, #29202a 0%, transparent 60%),
+    var(--bg);
+  font-family: Georgia, "Times New Roman", serif;
+}
+main { width: 100%; max-width: 430px; text-align: center; }
+.version {
+  color: var(--muted);
+  font: 11px sans-serif;
+  letter-spacing: 3px;
+  margin-bottom: 34px;
+}
+.rune {
+  color: var(--gold);
+  font-size: 34px;
+  margin-bottom: 18px;
+}
+h1 {
+  color: var(--gold-light);
+  font-size: clamp(29px, 8vw, 40px);
+  line-height: 1.2;
+  margin: 0;
+  text-shadow: 0 0 24px #c9a45c25;
+}
+.subtitle {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 18px 0 36px;
+}
+.divider {
+  width: 100px;
+  height: 1px;
+  margin: 0 auto 30px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+.menu { display: grid; gap: 12px; }
+button {
+  width: 100%;
+  min-height: 54px;
+  padding: 15px;
+  color: var(--gold-light);
+  background: linear-gradient(100deg, #211b20, #17131a);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  font: 16px Georgia, serif;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: background .2s, border-color .2s;
+}
+button:active { background: #382a20; }
+button:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+button.primary {
+  border-color: var(--gold);
+  background: linear-gradient(100deg, #49351c, #28201a);
+}
+button:disabled { opacity: .4; cursor: not-allowed; }
+.panel {
+  display: none;
+  margin-top: 22px;
+  padding: 20px;
+  text-align: left;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  line-height: 1.6;
+}
+.panel.visible { display: block; }
+.panel h2 { color: var(--gold-light); font-size: 20px; margin-top: 0; }
+.panel p { font-size: 14px; }
+.panel button { margin-top: 8px; }
+footer {
+  margin-top: 34px;
+  color: #756b60;
+  font: 10px sans-serif;
+  letter-spacing: 2px;
+}
+</style>
+</head>
+<body>
+<main>
+  <div class="version">ЛАБОРАТОРІЯ · ВЕРСІЯ 0.0.1</div>
+  <div class="rune" aria-hidden="true">✧ ⟡ ✧</div>
+  <h1>Хроніки<br>Забутих Земель</h1>
+  <p class="subtitle">Пам'ять зникла.<br>Світ пам'ятає.</p>
+  <div class="divider"></div>
+
+  <nav class="menu" aria-label="Головне меню">
+    <button class="primary" data-panel="new">✦ Нова гра</button>
+    <button disabled title="З'явиться після реалізації збережень">Продовжити</button>
+    <button data-panel="settings">⚙ Налаштування</button>
+    <button data-panel="about">ⓘ Про гру</button>
+  </nav>
+
+  <section class="panel" id="panel" aria-live="polite">
+    <h2 id="panel-title"></h2>
+    <p id="panel-text"></p>
+    <button id="close-panel">Назад до меню</button>
+  </section>
+
+  <footer>ПРОТОТИП · НЕ ФІНАЛЬНИЙ ДИЗАЙН</footer>
+</main>
+
+<script>
+const content = {
+  new: {
+    title: 'Початок пригоди',
+    text: 'Тут з’явиться створення персонажа та вступ до історії. Поки що це демонстрація інтерфейсу.'
+  },
+  settings: {
+    title: 'Налаштування',
+    text: 'У майбутньому тут будуть налаштування звуку, тексту та відображення. Поки параметри не реалізовані.'
+  },
+  about: {
+    title: 'Про гру',
+    text: '«Хроніки Забутих Земель» — текстова RPG у власному темному фентезійному світі. Досліджуй землі, розкривай таємниці та впливай на долю персонажів.'
+  }
+};
+
+const panel = document.getElementById('panel');
+const title = document.getElementById('panel-title');
+const text = document.getElementById('panel-text');
+
+document.querySelectorAll('[data-panel]').forEach(button => {
+  button.addEventListener('click', () => {
+    const item = content[button.dataset.panel];
+    title.textContent = item.title;
+    text.textContent = item.text;
+    panel.classList.add('visible');
+  });
+});
+
+document.getElementById('close-panel').addEventListener('click', () => {
+  panel.classList.remove('visible');
+});
+</script>
+</body>
+</html>
