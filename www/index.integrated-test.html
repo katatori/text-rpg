@@ -90,7 +90,22 @@ label{display:block;margin:13px 0 6px;color:var(--muted);font-size:13px} input,s
     <div class="subtitle">Твоя історія починається серед руїн старого світу</div>
   </header>
 
-  <section class="panel" id="setupScreen">
+  <section class="panel" id="mainMenuScreen">
+    <div class="panel-title"><h2>Головне меню</h2></div>
+    <p class="subtitle">Обери, з чого почнеться твоя історія.</p>
+    <button class="primary full" onclick="showCharacterCreation()">Нова подорож</button>
+    <button class="full" onclick="showCharacterSelection()">Вибрати персонажа</button>
+  </section>
+
+  <section class="panel hidden" id="characterSelectionScreen">
+    <div class="panel-title"><h2>Вибір персонажа</h2></div>
+    <div id="savedCharacterInfo"></div>
+    <button class="primary full" onclick="continueWithCharacter()">Продовжити подорож</button>
+    <button class="full" onclick="showCharacterCreation()">Створити нового персонажа</button>
+    <button class="full" onclick="showMainMenu()">Назад до меню</button>
+  </section>
+
+  <section class="panel hidden" id="setupScreen">
     <div class="panel-title"><h2>Створи свого героя</h2></div>
     <label for="heroName">Ім’я персонажа</label>
     <input id="heroName" maxlength="20" placeholder="Введи ім’я">
@@ -264,6 +279,58 @@ function render() {
   savePlayer();
 }
 
+function hideAllScreens() {
+  ["mainMenuScreen", "characterSelectionScreen", "setupScreen", "gameUI"].forEach(id => {
+    document.getElementById(id).classList.add("hidden");
+  });
+}
+
+function showMainMenu() {
+  hideAllScreens();
+  document.getElementById("mainMenuScreen").classList.remove("hidden");
+}
+
+function showCharacterCreation() {
+  hideAllScreens();
+  document.getElementById("setupScreen").classList.remove("hidden");
+}
+
+function showCharacterSelection() {
+  hideAllScreens();
+  document.getElementById("characterSelectionScreen").classList.remove("hidden");
+
+  const saved = loadPlayer();
+  const info = document.getElementById("savedCharacterInfo");
+  const continueButton = document.querySelector('button[onclick="continueWithCharacter()"]');
+
+  if (!saved || !saved.name) {
+    info.textContent = "Збережених персонажів поки немає.";
+    continueButton.disabled = true;
+  } else {
+    const classes = { warrior: "Воїн", assassin: "Убивця", mage: "Маг" };
+    info.textContent = saved.name + " · " + (classes[saved.heroClass] || saved.heroClass) +
+      " · Рівень " + saved.level;
+    continueButton.disabled = false;
+  }
+}
+
+function continueWithCharacter() {
+  const saved = loadPlayer();
+  if (!saved || !saved.name) {
+    alert("Немає збереженого персонажа.");
+    return;
+  }
+
+  player = saved;
+  hasCharacter = true;
+  enemy = null;
+  hideAllScreens();
+  document.getElementById("gameUI").classList.remove("hidden");
+  addLog("Ти продовжуєш подорож, " + player.name + ".", "gold");
+  render();
+  findEnemy();
+}
+
 function createCharacter() {
   const name = document.getElementById("heroName").value.trim();
   const heroClass = document.getElementById("heroClass").value;
@@ -280,7 +347,7 @@ function createCharacter() {
   if (origin === "coast") player.strength += 2;
   hasCharacter = true;
   savePlayer();
-  document.getElementById("setupScreen").classList.add("hidden");
+  hideAllScreens();
   document.getElementById("gameUI").classList.remove("hidden");
   addLog("Подорож починається, " + player.name + ". Попереду — невідомі землі.");
   render();
@@ -411,8 +478,8 @@ function resetGame() {
   enemy = null;
   guarding = false;
   logEntries = ["Створи нового героя, щоб розпочати подорож."];
-  document.getElementById("setupScreen").classList.remove("hidden");
-  document.getElementById("gameUI").classList.add("hidden");
+  hideAllScreens();
+  document.getElementById("mainMenuScreen").classList.remove("hidden");
   document.getElementById("heroName").value = "";
   renderLog();
   render();
@@ -420,13 +487,8 @@ function resetGame() {
 
 function initializeGame() {
   renderLog();
-  if (hasCharacter) {
-    document.getElementById("setupScreen").classList.add("hidden");
-    document.getElementById("gameUI").classList.remove("hidden");
-  } else {
-    document.getElementById("setupScreen").classList.remove("hidden");
-    document.getElementById("gameUI").classList.add("hidden");
-  }
+  hideAllScreens();
+  document.getElementById("mainMenuScreen").classList.remove("hidden");
   render();
 }
 
