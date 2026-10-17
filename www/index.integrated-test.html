@@ -156,7 +156,27 @@ label{display:block;margin:13px 0 6px;color:var(--muted);font-size:13px} input,s
     <button class="primary full" onclick="showGameMainMenu()">Назад до головного меню</button>
   </section>
 
-  <div id="gameUI" class="hidden">
+  <section class="panel hidden" id="heroScreen">
+  <div class="panel-title"><h2>Герой</h2><span class="level" id="heroScreenLevel">Рівень 1</span></div>
+  <p id="heroScreenIdentity">Мандрівник</p>
+  <div class="bar-label"><span>Здоров’я</span><span id="heroScreenHpText">100 / 100</span></div>
+  <div class="bar"><div class="fill hp-fill" id="heroScreenHpBar"></div></div>
+  <div class="bar-label"><span>Досвід</span><span id="heroScreenXpText">0 / 100 XP</span></div>
+  <div class="bar"><div class="fill xp-fill" id="heroScreenXpBar"></div></div>
+  <div class="stats">
+    <div class="stat"><strong id="heroScreenStrength">10</strong><span>Сила</span></div>
+    <div class="stat"><strong id="heroScreenDefense">4</strong><span>Захист</span></div>
+    <div class="stat"><strong id="heroScreenAgility">5</strong><span>Спритність</span></div>
+  </div>
+  <div class="stats">
+    <div class="stat"><strong id="heroScreenPotions">3</strong><span>Зілля</span></div>
+    <div class="stat"><strong id="heroScreenGold">0</strong><span>Золото</span></div>
+    <div class="stat"><strong id="heroScreenWins">0</strong><span>Перемоги</span></div>
+  </div>
+  <button class="primary full" onclick="showGameMainMenu()">Назад до головного меню</button>
+</section>
+
+<div id="gameUI" class="hidden">
   <section class="panel">
     <div class="panel-title">
       <h2>Мандрівник</h2>
@@ -202,6 +222,7 @@ label{display:block;margin:13px 0 6px;color:var(--muted);font-size:13px} input,s
       <p>Ти знепритомнів. Подорож ще не завершена, але цього разу доведеться відступити.</p>
       <button class="primary full" onclick="recover()">Повернутися до тями</button>
     </div>
+    <button class="full" onclick="showGameMainMenu()">До головного меню</button>
   </section>
 
   <section class="panel">
@@ -320,7 +341,7 @@ function render() {
 }
 
 function hideAllScreens() {
-  ["mainMenuScreen", "characterSelectionScreen", "setupScreen", "gameMainMenu", "locationsScreen", "underDevelopmentScreen", "gameUI"].forEach(id => {
+  ["mainMenuScreen", "characterSelectionScreen", "setupScreen", "gameMainMenu", "locationsScreen", "underDevelopmentScreen", "heroScreen", "gameUI"].forEach(id => {
     document.getElementById(id).classList.add("hidden");
   });
 }
@@ -370,13 +391,44 @@ function showUnderDevelopment(name) {
   document.getElementById("underDevelopmentScreen").classList.remove("hidden");
 }
 
+function renderHeroScreen() {
+  const classNames = { warrior: "Воїн", assassin: "Убивця", mage: "Маг" };
+  const originNames = {
+    plains: "Забуті рівнини",
+    north: "Північні рубежі",
+    coast: "Попелясте узбережжя",
+    far: "Далекий край"
+  };
+
+  const identity = [
+    player.name,
+    classNames[player.heroClass],
+    originNames[player.origin]
+  ].filter(Boolean).join(" · ");
+
+  document.getElementById("heroScreenIdentity").textContent = identity || "Мандрівник";
+  document.getElementById("heroScreenLevel").textContent = "Рівень " + player.level;
+  document.getElementById("heroScreenHpText").textContent = player.hp + " / " + player.maxHp;
+  document.getElementById("heroScreenHpBar").style.width =
+    (player.maxHp > 0 ? player.hp / player.maxHp * 100 : 0) + "%";
+
+  const needed = player.level * 100;
+  document.getElementById("heroScreenXpText").textContent = player.xp + " / " + needed + " XP";
+  document.getElementById("heroScreenXpBar").style.width =
+    Math.min(100, player.xp / needed * 100) + "%";
+
+  document.getElementById("heroScreenStrength").textContent = player.strength;
+  document.getElementById("heroScreenDefense").textContent = player.defense;
+  document.getElementById("heroScreenAgility").textContent = player.agility;
+  document.getElementById("heroScreenPotions").textContent = player.potions;
+  document.getElementById("heroScreenGold").textContent = player.gold;
+  document.getElementById("heroScreenWins").textContent = player.wins;
+}
+
 function showHero() {
   hideAllScreens();
-  document.getElementById("gameUI").classList.remove("hidden");
-  render();
-  document.getElementById("exploration").classList.add("hidden");
-  document.getElementById("battle").classList.add("hidden");
-  document.getElementById("defeat").classList.add("hidden");
+  renderHeroScreen();
+  document.getElementById("heroScreen").classList.remove("hidden");
 }
 
 function enterLocation(name) {
